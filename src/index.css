@@ -1,0 +1,391 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+@layer base {
+  :root {
+    /* ---- Warm base ---- */
+    --bg-base: #f4f1ec;
+    --bg-secondary: #fbfaf7;
+    --bg-panel: rgba(255, 255, 255, 0.62);
+    --bg-panel-solid: #fdfcfa;
+    --bg-elevated: rgba(245, 241, 234, 0.65);
+
+    /* ---- Borders (warm) ---- */
+    --border-color: rgba(139, 111, 71, 0.14);
+    --border-soft: rgba(139, 111, 71, 0.08);
+    --border-hover: rgba(139, 111, 71, 0.30);
+    --glass-border: rgba(255, 255, 255, 0.65);
+
+    /* ---- Text (warm charcoal → taupe) ---- */
+    --text-primary: #2a2620;
+    --text-secondary: #6b6558;
+    --text-muted: #918a7c;
+
+    /* ---- Brown accent ramp ---- */
+    --brown-50: #f7f3ec;
+    --brown-100: #ebe2d2;
+    --brown-200: #d9c8ab;
+    --brown-300: #c2ab85;
+    --brown-400: #a88b5f;
+    --brown-500: #8b6f47;
+    /* primary */
+    --brown-600: #6f573a;
+    --brown-700: #57432d;
+    --brown-800: #3f3020;
+    --brown-900: #2a2015;
+
+    /* ---- Accent (was blue, now brown) ---- */
+    --accent-blue: #8b6f47;
+    --accent-blue-light: rgba(139, 111, 71, 0.10);
+    --accent-blue-border: rgba(139, 111, 71, 0.32);
+    --accent-hover: #6f573a;
+
+    /* ---- Glass effect ---- */
+    --glass-bg: rgba(255, 255, 255, 0.58);
+    --glass-blur: 14px;
+    --glass-shadow: 0 8px 24px rgba(87, 67, 45, 0.08),
+      0 2px 6px rgba(87, 67, 45, 0.05);
+    --glass-shadow-lg: 0 16px 40px rgba(87, 67, 45, 0.12),
+      0 4px 12px rgba(87, 67, 45, 0.08);
+    --glass-shadow-hover: 0 14px 34px rgba(87, 67, 45, 0.12),
+      0 4px 10px rgba(87, 67, 45, 0.07);
+
+    /* ---- Thermal scale (UNCHANGED — data semantics) ---- */
+    --thermal-cool: #2563eb;
+    --thermal-mild: #0ea5e9;
+    --thermal-moderate: #eab308;
+    --thermal-warm: #f97316;
+    --thermal-hot: #ef4444;
+  }
+
+  body {
+    background-color: var(--bg-base);
+    background-image:
+      radial-gradient(1200px 620px at 8% -10%, rgba(217, 200, 171, 0.38), transparent 60%),
+      radial-gradient(900px 500px at 105% 0%, rgba(184, 181, 175, 0.30), transparent 55%),
+      linear-gradient(180deg, #f6f3ee 0%, #efeae1 100%);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    width: 100vw;
+    min-height: 100vh;
+    background-color: transparent;
+  }
+}
+
+/* ============================================================
+   GLASS UTILITIES
+   ============================================================ */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow-lg);
+}
+
+.glass-tint {
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.68) 0%,
+      rgba(245, 241, 234, 0.55) 100%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* ============================================================
+   TAILWIND UTILITY OVERRIDES
+   (auto-glassify existing components — no JSX changes needed)
+   ============================================================ */
+
+/* ---- Surfaces ---- */
+.bg-white {
+  background-color: var(--glass-bg) !important;
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border-color: var(--border-color) !important;
+  box-shadow: var(--glass-shadow);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.bg-white:hover {
+  box-shadow: var(--glass-shadow-hover);
+  border-color: var(--border-hover) !important;
+}
+
+.bg-slate-50 {
+  background-color: rgba(245, 241, 234, 0.55) !important;
+}
+
+.bg-slate-100 {
+  background-color: rgba(236, 235, 232, 0.65) !important;
+}
+
+.bg-slate-50\/50 {
+  background-color: rgba(245, 241, 234, 0.5) !important;
+}
+
+.bg-slate-200\/60:hover {
+  background-color: rgba(216, 214, 209, 0.6) !important;
+}
+
+.bg-slate-900\/40 {
+  background-color: rgba(42, 32, 21, 0.45) !important;
+}
+
+.bg-slate-800 {
+  background-color: var(--brown-700) !important;
+}
+
+.hover\:bg-slate-100:hover {
+  background-color: rgba(236, 235, 232, 0.72) !important;
+}
+
+.hover\:bg-slate-200\/60:hover {
+  background-color: rgba(216, 214, 209, 0.6) !important;
+}
+
+/* ---- Text ---- */
+.text-slate-900 {
+  color: var(--text-primary) !important;
+}
+
+.text-slate-800 {
+  color: #3b3934 !important;
+}
+
+.text-slate-700 {
+  color: #514e48 !important;
+}
+
+.text-slate-600 {
+  color: var(--text-secondary) !important;
+}
+
+.text-slate-500 {
+  color: var(--text-muted) !important;
+}
+
+.text-slate-400 {
+  color: #a39c8d !important;
+}
+
+/* ---- Borders ---- */
+.border-slate-200 {
+  border-color: var(--border-color) !important;
+}
+
+.border-slate-100 {
+  border-color: var(--border-soft) !important;
+}
+
+/* ---- Accent: blue → brown ---- */
+.bg-blue-600 {
+  background-color: var(--brown-500) !important;
+}
+
+.bg-blue-700 {
+  background-color: var(--brown-600) !important;
+}
+
+.hover\:bg-blue-700:hover {
+  background-color: var(--accent-hover) !important;
+}
+
+.text-blue-600 {
+  color: var(--brown-500) !important;
+}
+
+.text-blue-700 {
+  color: var(--brown-600) !important;
+}
+
+.text-blue-900 {
+  color: var(--brown-800) !important;
+}
+
+.bg-blue-50 {
+  background-color: var(--accent-blue-light) !important;
+}
+
+.bg-blue-100 {
+  background-color: rgba(139, 111, 71, 0.14) !important;
+}
+
+.border-blue-200 {
+  border-color: var(--accent-blue-border) !important;
+}
+
+.focus\:ring-blue-500\/30:focus {
+  --tw-ring-color: rgba(139, 111, 71, 0.30) !important;
+}
+
+/* ---- Amber (heat) → warm ochre ---- */
+.text-amber-600 {
+  color: #a86a2b !important;
+}
+
+.bg-amber-50 {
+  background-color: rgba(200, 150, 90, 0.14) !important;
+}
+
+.border-amber-200 {
+  border-color: rgba(200, 150, 90, 0.36) !important;
+}
+
+/* ---- Emerald (vegetation) → muted sage ---- */
+.text-emerald-600 {
+  color: #4f7a5c !important;
+}
+
+.text-emerald-700 {
+  color: #3e624a !important;
+}
+
+.bg-emerald-50 {
+  background-color: rgba(79, 122, 92, 0.12) !important;
+}
+
+.border-emerald-200 {
+  border-color: rgba(79, 122, 92, 0.30) !important;
+}
+
+/* ---- Sky (water) → dusty blue (kept cool for semantic clarity) ---- */
+.text-sky-600 {
+  color: #4a6f8c !important;
+}
+
+.bg-sky-50 {
+  background-color: rgba(74, 111, 140, 0.12) !important;
+}
+
+.border-sky-200 {
+  border-color: rgba(74, 111, 140, 0.30) !important;
+}
+
+/* ---- Red (alert) → warm terracotta ---- */
+.text-red-600 {
+  color: #a8453a !important;
+}
+
+.bg-red-50 {
+  background-color: rgba(168, 69, 58, 0.10) !important;
+}
+
+.border-red-200 {
+  border-color: rgba(168, 69, 58, 0.28) !important;
+}
+
+/* ---- Violet → muted plum ---- */
+.text-violet-600 {
+  color: #6d5a78 !important;
+}
+
+/* ============================================================
+   CARD HELPERS (for new code)
+   ============================================================ */
+.card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--glass-shadow);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+.card:hover {
+  box-shadow: var(--glass-shadow-hover);
+  border-color: var(--border-hover);
+}
+
+.card-solid {
+  background: var(--bg-panel-solid);
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(87, 67, 45, 0.06);
+}
+
+/* ============================================================
+   GIS CANVAS (kept, warmed)
+   ============================================================ */
+.gis-canvas-container {
+  position: relative;
+  background-color: #f8f5ef;
+  overflow: hidden;
+}
+
+/* ============================================================
+   SCROLLBARS (warm brown)
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(245, 241, 234, 0.6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 111, 71, 0.28);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 111, 71, 0.45);
+}
+
+/* ============================================================
+   FONTS
+   ============================================================ */
+.font-mono-tech {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+}
+
+/* ============================================================
+   THERMAL GRADIENT (unchanged — data legend)
+   ============================================================ */
+.bg-thermal-gradient {
+  background: linear-gradient(to right,
+      var(--thermal-cool),
+      var(--thermal-mild),
+      var(--thermal-moderate),
+      var(--thermal-warm),
+      var(--thermal-hot));
+}
+
+/* ============================================================
+   LEAFLET
+   ============================================================ */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  background-color: #f8f5ef !important;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ============================================================
+   FOCUS VISIBLE (warm ring)
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid var(--brown-500);
+  outline-offset: 2px;
+}

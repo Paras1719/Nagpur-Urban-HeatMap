@@ -1,0 +1,260 @@
+/* ============================================================
+   THEME: Warm Grey & Brown — Light + Glassmorphism
+   ============================================================ */
+
+:root {
+  /* --- Base palette --- */
+  --bg-app: #f4f1ec;
+  --bg-app-2: #eae5dc;
+  --bg-surface: rgba(255, 255, 255, 0.65);
+  --bg-surface-solid: #fdfcfa;
+  --bg-surface-muted: rgba(245, 241, 234, 0.55);
+
+  /* --- Brown ramp --- */
+  --brown-50: #f7f3ec;
+  --brown-100: #ebe2d2;
+  --brown-200: #d9c8ab;
+  --brown-300: #c2ab85;
+  --brown-400: #a88b5f;
+  --brown-500: #8b6f47;
+  --brown-600: #6f573a;
+  --brown-700: #57432d;
+  --brown-800: #3f3020;
+  --brown-900: #2a2015;
+
+  /* --- Grey ramp (warm) --- */
+  --grey-50: #f6f5f3;
+  --grey-100: #ecebe8;
+  --grey-200: #d8d6d1;
+  --grey-300: #b8b5af;
+  --grey-400: #918d86;
+  --grey-500: #6e6a63;
+  --grey-600: #514e48;
+  --grey-700: #3b3934;
+  --grey-800: #262420;
+  --grey-900: #161512;
+
+  /* --- Semantic --- */
+  --text-primary: #2a2620;
+  --text-secondary: #6b6558;
+  --text-muted: #918a7c;
+  --text-inverse: #fdfcfa;
+
+  --border-soft: rgba(139, 111, 71, 0.12);
+  --border-mid: rgba(139, 111, 71, 0.22);
+  --border-strong: rgba(87, 67, 45, 0.35);
+
+  --accent: #8b6f47;
+  --accent-hover: #6f573a;
+  --accent-bg: rgba(139, 111, 71, 0.10);
+  --accent-border: rgba(139, 111, 71, 0.35);
+
+  /* --- Glass effect --- */
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-strong: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.65);
+  --glass-border-dark: rgba(139, 111, 71, 0.15);
+  --glass-shadow: 0 8px 24px rgba(87, 67, 45, 0.08), 0 2px 6px rgba(87, 67, 45, 0.05);
+  --glass-shadow-lg: 0 16px 40px rgba(87, 67, 45, 0.12), 0 4px 12px rgba(87, 67, 45, 0.08);
+  --glass-blur: 14px;
+
+  --shadow-sm: 0 1px 2px rgba(87, 67, 45, 0.06);
+  --shadow-md: 0 6px 18px rgba(87, 67, 45, 0.08);
+  --shadow-lg: 0 18px 48px rgba(87, 67, 45, 0.14);
+
+  /* --- Typography --- */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+
+/* ============================================================
+   GLOBAL RESET / BASE
+   ============================================================ */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(217, 200, 171, 0.35), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(184, 181, 175, 0.28), transparent 55%),
+    linear-gradient(180deg, #f6f3ee 0%, #efeae1 100%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   GLASS CARD UTILITIES
+   ============================================================ */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-strong {
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow-lg);
+}
+
+.glass-tint {
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.65) 0%,
+      rgba(245, 241, 234, 0.55) 100%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* ============================================================
+   TAILWIND UTILITY OVERRIDES
+   (re-map whites/slates/ambers to warm brown/grey palette)
+   ============================================================ */
+
+/* --- Backgrounds --- */
+.bg-white {
+  background-color: var(--bg-surface) !important;
+  backdrop-filter: blur(12px) saturate(140%);
+}
+
+.bg-slate-50 {
+  background-color: rgba(245, 241, 234, 0.5) !important;
+}
+
+.bg-slate-100 {
+  background-color: rgba(236, 235, 232, 0.6) !important;
+}
+
+.bg-slate-900\/40 {
+  background-color: rgba(42, 32, 21, 0.4) !important;
+}
+
+/* --- Text --- */
+.text-slate-900 {
+  color: var(--text-primary) !important;
+}
+
+.text-slate-800 {
+  color: var(--grey-800) !important;
+}
+
+.text-slate-700 {
+  color: var(--grey-700) !important;
+}
+
+.text-slate-600 {
+  color: var(--text-secondary) !important;
+}
+
+.text-slate-500 {
+  color: var(--text-muted) !important;
+}
+
+.text-slate-400 {
+  color: var(--grey-400) !important;
+}
+
+/* --- Borders --- */
+.border-slate-200 {
+  border-color: var(--border-soft) !important;
+}
+
+.border-slate-100 {
+  border-color: rgba(139, 111, 71, 0.08) !important;
+}
+
+/* --- Accent overrides (blue → brown) --- */
+.bg-blue-600 {
+  background-color: var(--accent) !important;
+}
+
+.bg-blue-700 {
+  background-color: var(--accent-hover) !important;
+}
+
+.hover\:bg-blue-700:hover {
+  background-color: var(--accent-hover) !important;
+}
+
+.text-blue-600 {
+  color: var(--accent) !important;
+}
+
+.text-blue-900 {
+  color: var(--brown-800) !important;
+}
+
+.border-blue-200 {
+  border-color: var(--accent-border) !important;
+}
+
+.bg-blue-50 {
+  background-color: var(--accent-bg) !important;
+}
+
+.ring-blue-500\/30 {
+  --tw-ring-color: rgba(139, 111, 71, 0.3) !important;
+}
+
+.focus\:ring-blue-500\/30:focus {
+  --tw-ring-color: rgba(139, 111, 71, 0.3) !important;
+}
+
+/* ============================================================
+   CARD / SURFACE HELPERS
+   ============================================================ */
+.card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: var(--glass-shadow);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.card:hover {
+  box-shadow: var(--glass-shadow-lg);
+}
+
+/* ============================================================
+   LEGACY STARTER STYLES (kept for compatibility)
+   ============================================================ */
+.counter {
+  font-size: 16px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+  margin-bottom: 24px;
+}
+
+.counter:hover {
+  border-color: var(--accent-border);
+}
+
+.counter:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ... keep the rest of the starter styles if you still use them ... */
