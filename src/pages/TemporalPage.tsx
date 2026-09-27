@@ -377,7 +377,9 @@ export const TemporalPage: FC = () => {
                   borderRadius: '8px',
                   fontSize: '12px',
                 }}
-                formatter={(v: number) => `${v}%`}
+                formatter={(value?: number) =>
+                  value !== undefined ? `${value}%` : '-'
+                }
               />
               <Legend wrapperStyle={{ fontSize: 12 }} />
               {lulcKeysPresent.map((k) => (

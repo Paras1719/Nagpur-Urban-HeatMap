@@ -441,7 +441,12 @@ export const HeatMapPage: FC = () => {
                 />
                 <Tooltip
                   cursor={{ fill: 'rgba(59,130,246,0.06)' }}
-                  formatter={(v: number) => [`${v}`, 'HVI']}
+                  formatter={(value?: number) => {
+                    if (typeof value === 'number') {
+                      return [`${value}`, 'HVI'];
+                    }
+                    return ['-', 'HVI']; // fallback if undefined
+                  }}
                 />
                 <Bar dataKey="hvi" radius={[0, 4, 4, 0]}>
                   {hviBarData.map((entry, i) => (
