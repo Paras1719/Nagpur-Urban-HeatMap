@@ -1,8 +1,7 @@
 import type { FC } from 'react';
 import { motion } from 'framer-motion';
 import { PageHeader } from '../components/PageHeader';
-import { PIPELINE_DATASETS } from '../data/nagpurData';
-import { Database, GitCommit, Radio, BookOpen, ArrowDown } from 'lucide-react';
+import { Database, GitCommit, Radio, BookOpen } from 'lucide-react';
 
 export const DataMethodologyPage: FC = () => {
   const visualSteps = [

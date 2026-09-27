@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { FC } from 'react';
 import { motion } from 'framer-motion';
 import { PageHeader } from '../components/PageHeader';
@@ -419,8 +418,8 @@ export const TemporalPage: FC = () => {
                 key={w}
                 onClick={() => toggleWard(w)}
                 className={`px-2.5 py-1 rounded text-[11px] font-semibold border transition-all ${isSelected
-                    ? 'bg-blue-50 text-blue-700 border-blue-300'
-                    : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'
+                  ? 'bg-blue-50 text-blue-700 border-blue-300'
+                  : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'
                   }`}
               >
                 {w.replace(/^Ward\s/, 'W')}
@@ -755,4 +754,4 @@ export const TemporalPage: FC = () => {
       </div>
     </motion.div>
   );
-};
+};  

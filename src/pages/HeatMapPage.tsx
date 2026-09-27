@@ -22,7 +22,6 @@ import {
   TrendingUp,
   HelpCircle,
   Shield,
-  Users,
   Droplets,
   TreePine,
   AlertTriangle,
