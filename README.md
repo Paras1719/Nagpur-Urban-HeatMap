@@ -1,455 +1,272 @@
-<<<<<<< HEAD
-# React + TypeScript + Vite
+# Nagpur Urban Heat Island Intelligence Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A multi-temporal geospatial intelligence platform that analyses real satellite imagery (2019–2024) to map urban heat patterns across Nagpur, Maharashtra, identify persistent heat hotspots, explain what drives them, and let users run scenario-based "what-if" land-cover simulations — grounded against live weather data and real observed analog locations, not synthetic output.
 
-Currently, two official plugins are available:
+> Built for a hackathon challenge on multi-temporal UHI analysis & AI prediction for Nagpur. Every number on screen traces back to a named open dataset or an API call you can see fire in devtools — no placeholder data.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Table of Contents
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- [Problem Statement](#problem-statement)
+- [What This Project Does](#what-this-project-does)
+- [Pages / Features](#pages--features)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Data Sources & APIs](#data-sources--apis)
+- [Data Model](#data-model)
+- [Getting Started](#getting-started)
+- [Supabase Setup](#supabase-setup)
+- [Project Structure](#project-structure)
+- [Methodology Notes & Known Limitations](#methodology-notes--known-limitations)
+- [Roadmap](#roadmap)
+- [License](#license)
 
-## Expanding the Oxlint configuration
+---
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Problem Statement
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+Rapid urbanisation increases local surface temperatures as buildings, roads, and impervious surfaces replace vegetation and natural land cover — the Urban Heat Island (UHI) effect. For Nagpur, understanding where this is happening, how it's changing over time, and what's driving it supports urban planning, climate resilience, and green-cover investment decisions.
+
+The brief required more than a static heat map: real multi-year satellite analysis, land-cover/vegetation indicators, persistent hotspot identification, a land-cover ↔ temperature relationship model, and interactive scenario-based estimation — not absolute prediction.
+
+## What This Project Does
+
+1. **Analyses real satellite data** — Landsat 8/9 surface temperature, Sentinel-2 vegetation/built-up indices, and Dynamic World land cover, for Nagpur, 2019–2024.
+2. **Maps hotter and cooler zones** across Nagpur's 10 NMC administrative zones.
+3. **Identifies persistent vs. emerging heat hotspots** using Mann-Kendall trend testing and Getis-Ord Gi* hotspot statistics.
+4. **Explains what drives local heat** (vegetation cover, built-up density, proximity to water/green space) with SHAP-style driver attribution.
+5. **Runs land-cover scenarios** ("what if vegetation increases 10% here?") and estimates the resulting surface temperature shift — with an uncertainty range, cross-checked against real analog locations already showing similar land cover in Nagpur today.
+6. **Anchors everything to live reality** — current live air temperature, air quality, and a real thermal satellite feed layered on the map, so the app is visibly alive, not a static export.
+
+---
+
+## Pages / Features
+
+| # | Page | What makes it distinct |
+|---|---|---|
+| 1 | **Overview** | MapLibre + ArcGIS satellite base map of Nagpur with a live NASA GIBS MODIS thermal layer overlaid, plus live air-temperature and air-quality data cards (Open-Meteo APIs, fetched on load) |
+| 2 | **Distribution** | Statistical view of LST spread across all grid cells — histograms, LST-by-land-cover box plots, NDVI-vs-LST scatter, zones ranked and re-sortable by metric |
+| 3 | **Temporal Analysis** | Multi-line LST trend per zone (2019–2024) with a synced year-scrubber, small-multiple sparkline cards per zone, and a Mann-Kendall significance table |
+| 4 | **Maharashtra Districts** | Compares Nagpur against other Maharashtra districts using a live Open-Meteo current-temperature fetch alongside precomputed satellite-derived UHI intensity |
+| 5 | **Heat Hotspots** | 3D hotspot extrusion (deck.gl), live reverse-geocoding of clicked hotspots via OSM Nominatim, per-hotspot driver "fingerprint," year-by-year persistence timelapse |
+| 6 | **Scenario Lab** | Land-cover sliders feed a monotonic regression/XGBoost model; output is anchored to today's live Open-Meteo temperature, cross-checked against real analog grid cells with similar NDVI/built-up density (not model output alone), and every run is logged to Supabase with a live realtime "recent scenarios" ticker |
+
+---
+
+## Architecture
+
 ```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
-=======
-# Team Aspirion
-
-## Hackronyx 2.0
-
-**Problem Statement No.:** R2-P5  
-**Problem Statement:** Multi-Temporal Urban Heat Island Analysis & AI Prediction for Nagpur
-
----
-
-## 📌 Overview
-
-Rapid urbanisation can increase local surface temperatures through the expansion of buildings, roads, concrete surfaces, and other impervious areas, along with reductions in vegetation and natural land cover.
-
-**Team Aspirion** proposes an intelligent geospatial platform for analysing the evolution of Urban Heat Island (UHI) patterns across Nagpur using multi-temporal satellite imagery, land-use/land-cover information, geospatial indicators, and AI-assisted scenario modelling.
-
-The platform is designed to help users understand:
-
-- How surface temperature has changed over time.
-- Where persistent urban heat hotspots are located.
-- How vegetation and built-up areas relate to surface temperature.
-- How changes in vegetation or built-up areas could affect the estimated local heat profile.
-- How historical observations can support scenario-based estimation.
-
-> **Note:** The objective is scenario-based estimation and decision support, rather than absolute prediction of future climate.
-
----
-
-## 🎯 Objectives
-
-1. Analyse multi-temporal open satellite data for Nagpur.
-2. Generate Land Surface Temperature (LST) maps for different time periods.
-3. Identify persistent hotter and cooler zones.
-4. Analyse land-use/land-cover characteristics.
-5. Derive vegetation and built-up indicators such as **NDVI** and **NDBI**.
-6. Study the relationship between land characteristics and surface temperature.
-7. Detect persistent UHI hotspots through temporal comparison.
-8. Provide scenario-based AI estimation for changes in vegetation and built-up areas.
-9. Present the results through an interactive geospatial interface.
-
----
-
-# 🔄 Proposed Approach / Workflow
-
-The proposed workflow combines **satellite data → preprocessing → geospatial indices → LST extraction → temporal analysis → hotspot detection → relationship analysis → AI scenario modelling → interactive visualisation**.
-
-```text
-                    ┌─────────────────────────┐
-                    │   Satellite Data Input  │
-                    │ Landsat / Sentinel Data  │
-                    └────────────┬────────────┘
-                                 │
-                                 ▼
-                    ┌─────────────────────────┐
-                    │ Data Preprocessing       │
-                    │ • Cloud filtering        │
-                    │ • AOI selection          │
-                    │ • Atmospheric/scale prep │
-                    │ • Temporal alignment      │
-                    └────────────┬────────────┘
-                                 │
-                                 ▼
-              ┌──────────────────┴──────────────────┐
-              │                                     │
-              ▼                                     ▼
-   ┌─────────────────────┐               ┌─────────────────────┐
-   │ Land Cover Analysis │               │ Temperature Analysis│
-   │ • LULC              │               │ • LST               │
-   │ • NDVI              │               │ • Heat zones        │
-   │ • NDBI              │               │ • UHI patterns      │
-   └──────────┬──────────┘               └──────────┬──────────┘
-              │                                     │
-              └──────────────────┬──────────────────┘
-                                 ▼
-                    ┌─────────────────────────┐
-                    │ Multi-Temporal Analysis │
-                    │ • Year/period comparison│
-                    │ • Change detection      │
-                    │ • Persistent hotspots   │
-                    └────────────┬────────────┘
-                                 │
-                                 ▼
-                    ┌─────────────────────────┐
-                    │ Relationship Analysis   │
-                    │ LST ↔ NDVI ↔ NDBI/LULC │
-                    └────────────┬────────────┘
-                                 │
-                                 ▼
-                    ┌─────────────────────────┐
-                    │ AI / Scenario Modelling │
-                    │ • Vegetation change     │
-                    │ • Built-up change       │
-                    │ • Estimated heat impact │
-                    └────────────┬────────────┘
-                                 │
-                                 ▼
-                    ┌─────────────────────────┐
-                    │ Interactive GIS Platform │
-                    │ Maps • Charts • Insights │
-                    │ Scenario Exploration     │
-                    └─────────────────────────┘
-```
-
-## 1. Satellite Data Acquisition
-
-The platform will use suitable open satellite datasets such as **Landsat and/or Sentinel** to obtain historical observations of Nagpur.
-
-The data will provide the required information for:
-
-- Surface-temperature analysis.
-- Vegetation assessment.
-- Built-up area assessment.
-- Land-use/land-cover analysis.
-- Multi-temporal comparison.
-
-The analysis will use approximately **3–5 years or more of available data**, depending on data availability and quality.
-
----
-
-## 2. Data Preprocessing
-
-Before analysis, satellite data will be prepared for consistent comparison across different dates and periods.
-
-Key preprocessing steps include:
-
-- Selecting the Nagpur Area of Interest (AOI).
-- Filtering unsuitable or cloud-affected observations.
-- Applying required scale/reflectance preparation.
-- Aligning datasets spatially and temporally.
-- Preparing analysis-ready raster layers.
-
-The objective is to ensure that observations from different time periods can be compared reliably.
-
----
-
-## 3. Land Surface Temperature (LST) Mapping
-
-Land Surface Temperature will be derived from suitable satellite observations and represented spatially across Nagpur.
-
-The LST layer will be used to:
-
-- Visualise temperature distribution.
-- Identify relatively hotter and cooler regions.
-- Compare temperature patterns across different time periods.
-- Provide the primary heat-related variable for downstream analysis.
-
----
-
-## 4. Vegetation & Built-up Indicators
-
-To understand possible factors contributing to urban heat, the platform will calculate indicators such as:
-
-### NDVI — Normalized Difference Vegetation Index
-
-Used to represent vegetation characteristics and changes in green cover.
-
-### NDBI — Normalized Difference Built-up Index
-
-Used to represent built-up/impervious characteristics.
-
-These indicators can be analysed alongside LST to study how variations in vegetation and built-up areas correspond with surface-temperature patterns.
-
----
-
-## 5. Multi-Temporal UHI Analysis
-
-Instead of generating a single static heat map, the platform will compare observations across multiple time periods.
-
-The analysis will include:
-
-- Historical LST comparison.
-- NDVI and NDBI change analysis.
-- Spatial identification of changing heat zones.
-- Identification of regions with recurring high-temperature patterns.
-- Detection of **persistent heat hotspots**.
-
-This temporal component is central to the proposed solution.
-
----
-
-## 6. Land Cover & Temperature Relationship Analysis
-
-The system will analyse the relationship between land characteristics and surface temperature.
-
-For example:
-
-```text
-Vegetation ↑  ───────────────► Estimated heat profile
-Built-up area ↑ ─────────────► Estimated heat profile
-```
-
-The platform can examine spatial and statistical relationships between:
-
-- LST and NDVI.
-- LST and NDBI.
-- LST and land-use/land-cover classes.
-- Changes in land characteristics and corresponding temperature changes.
-
-The results will be presented using maps, charts, and interpretable indicators.
-
----
-
-## 7. AI-Based Scenario Modelling
-
-The AI layer will extend the historical analysis into **scenario-based estimation**.
-
-Rather than attempting to predict the exact future climate, the model will estimate how changes in relevant land characteristics could influence the local heat profile.
-
-### Example scenarios
-
-**Scenario A — Reduced Vegetation**
-
-```text
-Vegetation decreases
-        ↓
-Scenario features updated
-        ↓
-AI model estimates temperature/heat-profile change
-```
-
-**Scenario B — Increased Built-up Area**
-
-```text
-Built-up area increases
-        ↓
-Scenario features updated
-        ↓
-AI model estimates temperature/heat-profile change
-```
-
-**Scenario C — Increased Green Cover**
-
-```text
-Green cover increases
-        ↓
-Scenario features updated
-        ↓
-AI model estimates temperature/heat-profile change
-```
-
-The model output will be presented as an estimated change rather than an absolute claim about future climate.
-
----
-
-## 8. Persistent Hotspot Identification
-
-Historical temperature layers will be combined to identify areas that repeatedly exhibit relatively higher surface temperatures.
-
-A hotspot analysis layer can help users distinguish between:
-
-- Temporarily hot areas.
-- Repeatedly hot areas.
-- Areas showing changing heat patterns.
-- Relatively cooler regions.
-
-This provides a more useful interpretation than a single-date heat map.
-
----
-
-## 9. Interactive Geospatial Interface
-
-The final results will be exposed through an interactive web-based geospatial interface.
-
-Users will be able to explore:
-
-- Nagpur's LST maps.
-- Historical time periods.
-- NDVI and NDBI layers.
-- Land-use/land-cover information.
-- Persistent heat hotspots.
-- Temperature and land-cover relationships.
-- Scenario-based estimations.
-
-The interface will focus on making the analysis **visual, interactive, and explainable**.
-
----
-
-# 🧠 System Architecture
-
-```text
 ┌─────────────────────────────────────────────────────────────┐
-│                     React + TypeScript                      │
-│                  Interactive GIS Frontend                   │
-│                                                             │
-│  Maps │ Time Slider │ LST │ NDVI │ NDBI │ Hotspots │ AI     │
-└─────────────────────────────┬───────────────────────────────┘
+│  OFFLINE PIPELINE (Python, run periodically / per year)       │
+│  Google Earth Engine → Landsat LST, Sentinel-2 indices,       │
+│  Dynamic World LULC, WorldPop, Copernicus DEM                 │
+│       │                                                        │
+│       ▼                                                        │
+│  esda / pymannkendall / mgwr → hotspot + trend + regression    │
+│       │                                                        │
+│       ▼                                                        │
+│  scikit-learn / xgboost / shap → scenario model + explainers   │
+│       │                                                        │
+│       ▼                                                        │
+│  Export: grid_cells.csv, zone_stats.csv → bulk-load into       │
+│  Supabase Postgres                                              │
+└─────────────────────────────────────────────────────────────┘
                               │
-                              │ REST API
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                         Node.js                             │
-│                     Backend Layer                           │
-│                                                             │
-│  API Integration │ Data Management │ Authentication/Logic   │
-└───────────────────────┬─────────────────┬───────────────────┘
-                        │                 │
-                        │                 │
-                        ▼                 ▼
-              ┌────────────────┐  ┌────────────────────────┐
-              │ Python FastAPI │  │ Geospatial/Data Layer  │
-              │ AI & Analysis  │  │ Satellite & LULC Data  │
-              └───────┬────────┘  └────────────────────────┘
-                      │
-                      ▼
-              ┌────────────────┐
-              │ AI / ML Models │
-              │ Scenario       │
-              │ Estimation     │
-              └────────────────┘
+│  SUPABASE (Postgres + REST + Realtime + RLS)                   │
+│  grid_cells · zone_stats · scenario_runs                       │
+│  anon role: read-only on grid_cells/zone_stats,                │
+│             insert-only on scenario_runs                       │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│  FRONTEND (React + Vite, single multi-page SPA)                 │
+│  @supabase/supabase-js  ──► Supabase (stats, scenario logging) │
+│  fetch() ──► Open-Meteo (live temp, air quality, climate)       │
+│  fetch() ──► OSM Nominatim (reverse geocoding)                  │
+│  MapLibre GL ──► ArcGIS World Imagery + NASA GIBS thermal tiles │
+│  deck.gl ──► 3D hotspot extrusion                                │
+└─────────────────────────────────────────────────────────────┘
+```
+
+No page makes up data client-side — every page either queries Supabase (populated from the real offline pipeline) or calls a live public API directly from the browser.
+
+---
+
+## Tech Stack
+
+**Data acquisition**
+- Google Earth Engine (Python API) — Landsat 8/9, Sentinel-2, Dynamic World, WorldPop, Copernicus DEM
+- Microsoft Planetary Computer STAC (`pystac-client`) — fallback imagery source
+- OSM Overpass API — lakes, parks, roads
+- IMD / data.gov.in — ground-truth air temperature
+
+**Offline processing (Python)**
+- `xarray`, `rioxarray`, `rasterio`, `geopandas`
+- `esda`, `pysal` — Getis-Ord Gi* hotspot detection
+- `pymannkendall` — trend significance
+- `mgwr` — geographically weighted regression
+- `scikit-learn`, `xgboost`, `shap` — scenario model + explainability
+
+**Backend**
+- **Supabase** (Postgres, REST, Realtime, Row Level Security)
+
+**Frontend**
+- React + Vite, TypeScript
+- MapLibre GL JS + `maplibre-gl-draw`
+- deck.gl (3D hotspot layer)
+- Recharts / Plotly
+- Framer Motion
+- Tailwind CSS
+- `@supabase/supabase-js`
+
+**Live external APIs (all free, no key unless noted)**
+- Open-Meteo Forecast API — live current weather
+- Open-Meteo Air Quality API — live PM2.5/ozone
+- Open-Meteo Historical Archive API — heatwave-day index
+- Open-Meteo Climate API — CMIP6 downscaled projections to 2050
+- NASA GIBS WMTS — live MODIS Terra LST thermal tiles
+- NASA POWER API — cross-check historical temperature
+- OSM Nominatim — reverse geocoding
+- Esri/ArcGIS World Imagery — satellite base map tiles
+
+**Hosting**
+- Vercel / GitHub Pages (frontend) · Supabase (managed Postgres) · Render / Hugging Face Spaces (optional FastAPI inference)
+
+---
+
+## Data Sources & APIs
+
+| Source | Used for | Auth |
+|---|---|---|
+| Google Earth Engine | Landsat LST, Sentinel-2 NDVI/NDBI/MNDWI, Dynamic World LULC, WorldPop, DEM | Free account |
+| Microsoft Planetary Computer | Imagery fallback | None |
+| NASA GIBS | Live thermal satellite tile overlay | None |
+| NASA POWER | Historical temperature cross-check | None |
+| Open-Meteo (Forecast / Air Quality / Archive / Climate) | Live weather, AQI, heatwave index, CMIP6 projections | None |
+| OSM Overpass / Nominatim | Boundaries, landmarks, reverse geocoding | None |
+| Esri/ArcGIS World Imagery | Satellite base map | None |
+| IMD via data.gov.in | Ground-truth station temperature | Free key |
+
+---
+
+## Data Model
+
+### `grid_cells` — one row per satellite grid cell × year
+Feeds spatial statistics and the scenario model. Bulk-loaded from the offline pipeline, never hand-entered.
+Key fields: `cell_id`, `year`, `centroid_lat/lon`, `lst_celsius`, `lst_zscore`, `ndvi`, `ndbi`, `mndwi`, `lulc_class`, `building_density`, `population_density`, `elevation_m`, `dist_to_water_m`, `hotspot_class`, `trend_class`.
+
+### `zone_stats` — one row per NMC zone × year
+Feeds the live dashboard. 10 real NMC zones (Laxmi Nagar, Dharampeth, Hanuman Nagar, Dhantoli, Nehru Nagar, Gandhi Baugh, Sataranjipura, Lakadganj, Ashi Nagar, Mangalwari).
+Key fields: `zone_id`, `zone_name`, `year`, `mean_lst`, `lst_trend_slope`, `trend_pvalue`, `pct_persistent_hotspot`, `mean_ndvi`, `pct_built_up`, `pct_vegetation`, `total_population`, `heat_vulnerability_index`, `priority_rank`, `data_status`.
+
+### `scenario_runs` — log of every user-run what-if scenario
+`zone_id`, `ndvi_delta`, `built_up_delta`, `predicted_dlst`, `dlst_low`, `dlst_high`, `top_drivers`, `created_at`. Powers the live "recent scenarios" ticker via Supabase Realtime.
+
+Full SQL: see [`/db/supabase_schema.sql`](./db/supabase_schema.sql) and seed data in [`/db/supabase_seed_zones.sql`](./db/supabase_seed_zones.sql).
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js 18+
+- A Supabase project (see [Supabase Setup](#supabase-setup))
+- (Optional, for re-running the data pipeline) Python 3.10+, a free Google Earth Engine account
+
+### Frontend
+
+```bash
+git clone <this-repo-url>
+cd nagpur-uhi-platform
+npm install
+```
+
+Create a `.env` file:
+
+```env
+VITE_SUPABASE_URL=https://<your-project-ref>.supabase.co
+VITE_SUPABASE_ANON_KEY=<your-anon-key>
+```
+
+```bash
+npm run dev
+```
+
+### Offline data pipeline (optional — to regenerate `grid_cells`/`zone_stats`)
+
+```bash
+cd pipeline
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+earthengine authenticate
+python run_pipeline.py --years 2019 2020 2021 2022 2023 2024
+```
+
+This exports `grid_cells.csv` and updated `zone_stats.csv`, which can be bulk-imported via the Supabase Table Editor's CSV import or `COPY`.
+
+---
+
+## Supabase Setup
+
+1. Create a project at [supabase.com](https://supabase.com).
+2. Open **SQL Editor → New query**, paste and run [`db/supabase_schema.sql`](./db/supabase_schema.sql).
+3. Run [`db/supabase_seed_zones.sql`](./db/supabase_seed_zones.sql) to seed the 10 real NMC zones (satellite-derived metrics are intentionally left `NULL` with `data_status = 'pending_pipeline_run'` until the offline pipeline populates them — the UI shows this status honestly rather than faking a number).
+4. Under **Database → Replication**, enable Realtime for the `scenario_runs` table (needed for the live ticker on the Scenario Lab page).
+5. Copy your project URL and `anon` public key into `.env` as shown above.
+
+---
+
+## Project Structure
+
+```
+├── src/
+│   ├── pages/              # OverviewPage, DistributionPage, TemporalPage,
+│   │                        # DistrictsPage, HotspotPage, ScenarioPage
+│   ├── components/          # NagpurHeatMap, PageHeader, data cards, charts
+│   ├── hooks/                # useLiveNagpurWeather, useLiveNagpurAirQuality, etc.
+│   ├── lib/                  # supabaseClient.ts
+│   └── data/                 # nagpurData.ts (zone metadata/types)
+├── db/
+│   ├── supabase_schema.sql
+│   └── supabase_seed_zones.sql
+├── pipeline/
+│   ├── run_pipeline.py       # Earth Engine → indices → stats → export
+│   └── requirements.txt
+└── README.md
 ```
 
 ---
 
-# 🛠️ Tech Stack
+## Methodology Notes & Known Limitations
 
-## Frontend
+Documented openly rather than glossed over, since this directly affects how results should be read:
 
-- **React**
-- **TypeScript**
-- Interactive geospatial visualisation
-- Map-based dashboard
-- Charts and temporal visualisation
-
-## Backend
-
-- **Node.js**
-- REST-based backend services
-- Data and application logic
-- Communication between frontend and analysis services
-
-## API Development & AI/ML
-
-- **Python**
-- **FastAPI**
-- AI/ML model serving
-- Geospatial analysis APIs
-- Scenario-based estimation APIs
-
-## Data & Geospatial Processing
-
-- Open satellite data such as **Landsat / Sentinel**
-- Raster and geospatial data processing
-- Land-use/land-cover datasets
-- NDVI and NDBI generation
-- LST generation and analysis
-
-## Analytics & Visualisation
-
-- Multi-temporal raster analysis
-- Spatial comparison
-- Statistical relationship analysis
-- Interactive maps
-- Charts and analytical dashboards
+- **Landsat overpass is ~10:30am local time.** LST reflects morning surface conditions, not peak afternoon heat or felt air temperature.
+- **Seasonal consistency:** composites use March–May (dry season) each year for comparability; monsoon-season imagery is too cloud-affected to use reliably.
+- **Bare-soil confound:** fallow farmland and quarries around Nagpur can read hotter than dense urban core in dry season — land-cover-stratified comparisons avoid misreading this as "urban" heat.
+- **NASA GIBS thermal layer is ~1km resolution** — shown as live global context, not a substitute for the Landsat-derived 30m `grid_cells` analysis.
+- **Scenario Lab outputs are estimates, not forecasts** — a regression/XGBoost model with monotonic constraints, bounded by an uncertainty range and cross-checked against real analog locations, explicitly framed as scenario-based estimation per the problem brief.
+- **Year-to-year LST is normalised** (z-score vs. city median) before being called a "trend," to separate genuine land-cover change from ordinary weather variability between years.
 
 ---
 
-# 📊 Key Outputs
+## Roadmap
 
-The platform is intended to provide the following outputs:
-
-| Output | Purpose |
-|---|---|
-| **LST Maps** | Visualise surface-temperature distribution |
-| **NDVI Maps** | Analyse vegetation/green-cover characteristics |
-| **NDBI Maps** | Analyse built-up characteristics |
-| **Temporal Comparison** | Understand changes across multiple periods |
-| **Heat Hotspot Map** | Identify persistent heat-prone areas |
-| **LULC Analysis** | Understand land-cover composition and changes |
-| **Relationship Analysis** | Examine LST against vegetation and built-up indicators |
-| **Scenario Estimation** | Estimate heat-profile changes under hypothetical land-cover changes |
-| **Interactive Dashboard** | Explore and explain results through a geospatial interface |
+- [ ] ERA5 reanalysis (Copernicus CDS) for a published-grade heatwave frequency/intensity index
+- [ ] LST sharpening to 10m via Random Forest downscaling
+- [ ] CA-Markov built-up growth projection for "business as usual" vs. "green plan" comparison
+- [ ] FastAPI `/predict-scenario` endpoint or ONNX client-side inference to replace the current placeholder regression
 
 ---
 
-# 🌆 Example User Flow
+## License
 
-A user selects an urban region within Nagpur and chooses a historical time period.
+MIT — see [`LICENSE`](./LICENSE).
 
-```text
-Select Region
-     ↓
-Select Time Period
-     ↓
-View LST / NDVI / NDBI
-     ↓
-Compare Historical Periods
-     ↓
-Identify Heat Hotspots
-     ↓
-Explore Land-Cover Relationship
-     ↓
-Create a Scenario
-     ↓
-Modify Vegetation / Built-up Area
-     ↓
-Run AI Estimation
-     ↓
-Visualise Estimated Heat-Profile Change
-```
+## Acknowledgements
 
----
-
-# 💡 Core Value Proposition
-
-**Team Aspirion** aims to transform multi-temporal satellite observations into an interactive urban heat intelligence platform for Nagpur.
-
-The solution combines:
-
-**Satellite Data + Geospatial Analysis + Temporal Intelligence + AI Scenario Modelling + Interactive Visualisation**
-
-to help users understand **where urban heat occurs, how it changes over time, what land characteristics are associated with it, and how hypothetical changes in vegetation or built-up areas could affect the estimated heat profile.**
-
----
-
-## 👥 Team
-
-### Team Aspirion
-
-**Hackronyx 2.0 | PS R2-P5**
-
-> *Multi-Temporal Urban Heat Island Analysis & AI Prediction for Nagpur*
->>>>>>> 3cbd1af5526fbd70baf5bdfe58f4eee81d7a4904
+Built on open data from USGS/NASA (Landsat), ESA/Copernicus (Sentinel-2), Google (Dynamic World), WorldPop, NASA GIBS/POWER, Open-Meteo, OpenStreetMap, Esri, and Nagpur Municipal Corporation administrative data.
