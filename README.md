@@ -17,7 +17,6 @@ A multi-temporal geospatial intelligence platform that analyses real satellite i
 - [Data Model](#data-model)
 - [Getting Started](#getting-started)
 - [Supabase Setup](#supabase-setup)
-- [Project Structure](#project-structure)
 - [Methodology Notes & Known Limitations](#methodology-notes--known-limitations)
 - [Roadmap](#roadmap)
 - [License](#license)
@@ -133,10 +132,6 @@ No page makes up data client-side — every page either queries Supabase (popula
 - OSM Nominatim — reverse geocoding
 - Esri/ArcGIS World Imagery — satellite base map tiles
 
-**Hosting**
-- Vercel / GitHub Pages (frontend) · Supabase (managed Postgres) · Render / Hugging Face Spaces (optional FastAPI inference)
-
----
 
 ## Data Sources & APIs
 
@@ -219,25 +214,6 @@ This exports `grid_cells.csv` and updated `zone_stats.csv`, which can be bulk-im
 5. Copy your project URL and `anon` public key into `.env` as shown above.
 
 ---
-
-## Project Structure
-
-```
-├── src/
-│   ├── pages/              # OverviewPage, DistributionPage, TemporalPage,
-│   │                        # DistrictsPage, HotspotPage, ScenarioPage
-│   ├── components/          # NagpurHeatMap, PageHeader, data cards, charts
-│   ├── hooks/                # useLiveNagpurWeather, useLiveNagpurAirQuality, etc.
-│   ├── lib/                  # supabaseClient.ts
-│   └── data/                 # nagpurData.ts (zone metadata/types)
-├── db/
-│   ├── supabase_schema.sql
-│   └── supabase_seed_zones.sql
-├── pipeline/
-│   ├── run_pipeline.py       # Earth Engine → indices → stats → export
-│   └── requirements.txt
-└── README.md
-```
 
 ---
 
